@@ -3,6 +3,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { addPLayer, createGameDto } from './dto/dtos';
 import { GameRepository } from './game.repository';
 
@@ -29,18 +30,38 @@ export class GameService {
       }
       return game;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new NotFoundException();
     }
   }
-  async addPlayer(param: string, body: addPLayer) {
-    try {
-      let game = await this.gameRepository.findOne({ _id: param });
-      game.playerList.push({ playerIds: body.playerId });
 
-      const upGame = await this.gameRepository.upsert({ _id: param }, game);
-      return upGame;
-    } catch (error) {
-      throw new InternalServerErrorException();
+  async getGames() {
+    const games = await this.gameRepository.find({});
+    return games;
+  }
+  async addPlayer(param: string, body: addPLayer) {
+    let game = await this.gameRepository.findOne({ _id: param });
+    if (!game) {
+      throw new NotFoundException();
     }
+    game.playerList.push(body.playerId);
+
+    const upGame = await this.gameRepository.upsert({ _id: param }, game);
+    return upGame;
+  }
+
+  async endGame(param: string) {
+    const game = await this.gameRepository.findOneAndUpdate(
+      { _id: param },
+      { $set: { isLive: false } },
+    );
+    if (!game) {
+      throw new NotFoundException();
+    }
+    return game;
+  }
+
+  async findOneHelper(id: Types.ObjectId) {
+    const game = await this.gameRepository.findOne({ _id: id });
+    return game
   }
 }

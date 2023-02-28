@@ -25,7 +25,7 @@ export class Game extends AbstractDocument {
     ],
     default: [],
   })
-  playerList: { playerIds: Types.ObjectId }[];
+  playerList: Types.ObjectId[];
 
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'PlayerStats' }],

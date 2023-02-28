@@ -11,13 +11,23 @@ export class GameController {
     return this.gameService.createGame(reqBody);
   }
 
+  @Get()
+  async getGames() {
+    return this.gameService.getGames();
+  }
+
   @Get(':id')
-  async getGame(@Param(':id') param: string) {
+  async getGame(@Param('id') param: string) {
     return this.gameService.getGame(param);
   }
 
   @Patch(':id')
-  async addPlayer(@Param(':id') param: string, @Body() data: addPLayer) {
+  async addPlayer(@Param('id') param: string, @Body() data: addPLayer) {
     return this.gameService.addPlayer(param, data);
+  }
+
+  @Patch(':id/endgame')
+  async endGame(@Param('id') param: string) {
+    return this.gameService.endGame(param);
   }
 }

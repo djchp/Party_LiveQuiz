@@ -2,8 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { AbstractDocument } from 'src/abstract_repo/abstract.schema';
 
 export enum AccountType {
-  Admin = 'Admin',
-  User = 'User',
+  Admin = "Admin",
+  User = "User",
 }
 
 @Schema({ versionKey: false })

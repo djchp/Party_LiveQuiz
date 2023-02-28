@@ -15,6 +15,7 @@ export class Leadboard extends AbstractDocument {
         },
       },
     ],
+    default: [],
   })
   playerStatsList: { playerStatsIds: Types.ObjectId }[];
 
@@ -30,6 +31,7 @@ export class Leadboard extends AbstractDocument {
         ],
       },
     ],
+    default: [{ questionIndex: 0, leadboardList: [] }],
   })
   afterQuestionLeadboard: {
     questionIndex: number;

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { createQuizDto } from './dto/dtos';
 import { QuizRepository } from './quiz.repository';
 import { Quiz } from './schema/quiz.schema';
@@ -14,5 +15,11 @@ export class QuizService {
 
   async getQuizes(): Promise<Quiz[]> {
     return this.quizRepository.find({});
+  }
+
+  async findOneHelper(id: Types.ObjectId) {
+    const goodid = id.toHexString()
+    const quiz = await this.quizRepository.findOne({ _id: goodid });
+    return quiz;
   }
 }

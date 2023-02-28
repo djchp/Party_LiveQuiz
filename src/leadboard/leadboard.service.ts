@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
-import { Request } from 'express';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { Model } from 'mongoose';
-import { GameRepository } from 'src/game/game.repository';
-import { QuizRepository } from 'src/quizes/quiz.repository';
-import { createLeadboardDto } from './dto/dtos';
+import { GameService } from 'src/game/game.service';
+import { QuizService } from 'src/quizes/quiz.service';
+import { createLeadboardDto, updateLeadboardDto } from './dto/dtos';
 import { LeadboardRepository } from './leadboard.repository';
 import { Leadboard } from './schema/leadboard.schema';
 
@@ -12,18 +14,19 @@ import { Leadboard } from './schema/leadboard.schema';
 export class LeadboardService {
   constructor(
     private readonly leadboardRepository: LeadboardRepository,
-    protected readonly leadboard: Model<Leadboard>,
-    private readonly gameRepository: GameRepository,
-    private readonly quizRepository: QuizRepository,
+    private readonly gameSerivce: GameService,
+    private readonly quizService: QuizService,
   ) {}
 
-  async createLeadboard(request: Request, leadboardData: createLeadboardDto) {
-    const { gameId, playerStatsList } = leadboardData;
+  async createLeadboard(leadboardData: createLeadboardDto) {
+    const { gameId } = leadboardData;
 
-    const game = await this.gameRepository.findOne({ _id: gameId });
-    const quiz = await this.quizRepository.findOne({ _id: game._id });
+    const game = await this.gameSerivce.findOneHelper(gameId);
+    const quiz = await this.quizService.findOneHelper(game.quizId);
 
-    const leadboard = new this.leadboard({ gameId, playerStatsList });
+    const leadboard = await this.leadboardRepository.helperCreate({
+      gameId,
+    });
 
     quiz.questionList.forEach((q) => {
       leadboard.afterQuestionLeadboard.push({
@@ -47,5 +50,22 @@ export class LeadboardService {
     }
   }
 
+  async updateLeadboard(param: string, data: updateLeadboardDto) {
+    const idx = data.questionIdx;
+    const leadboard = await this.leadboardRepository.findOne({ _id: param });
+    leadboard.afterQuestionLeadboard[Number(idx) - 1].leadboardList.push({
+      playerIds: data.playerId,
+      playerCorrectAnswers: data.playerCorrectAnswers,
+    });
+    const upLeadboard = await this.leadboardRepository.helperCreate(leadboard);
 
+    const retLeadboard = await this.leadboardRepository.upsert(
+      { _id: param },
+      upLeadboard,
+    );
+    if (!retLeadboard) {
+      throw new InternalServerErrorException();
+    }
+    return retLeadboard;
+  }
 }

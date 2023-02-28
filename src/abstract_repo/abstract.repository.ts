@@ -72,4 +72,8 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async find(filterQuery: FilterQuery<TDocument>) {
     return this.model.find(filterQuery, {}, { lean: true });
   }
+  async helperCreate(data: Partial<TDocument>) {
+    const middleCreate = new this.model(data)
+    return middleCreate
+  }
 }

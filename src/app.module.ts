@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database.module';
 import { GameModule } from './game/game.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { LeadboardModule } from './leadboard/leadboard.module';
 import { QuizModule } from './quizes/quiz.module';
 
 @Module({
@@ -13,7 +14,8 @@ import { QuizModule } from './quizes/quiz.module';
     DatabaseModule,
     AuthModule,
     GameModule,
-    GatewayModule
+    GatewayModule,
+    LeadboardModule
   ],
   controllers: [],
   providers: [],
