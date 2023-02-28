@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { AbstractDocument } from 'src/abstract_repo/abstract.schema';
+import { AbstractDocument } from '../../abstract_repo/abstract.schema';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 @Schema()
 export class Leadboard extends AbstractDocument {
